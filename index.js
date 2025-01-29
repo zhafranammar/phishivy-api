@@ -1,13 +1,13 @@
 import express from "express";
 import bodyParser from "body-parser";
 import phishingRoute from "./routes/phishing.js";
+import cors from "cors";
 import dotenv from "dotenv";
 
 dotenv.config()
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-console.log(process.env.ALLOWED_ORIGINS)
 const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",").map(
   (origin) => origin
 );
