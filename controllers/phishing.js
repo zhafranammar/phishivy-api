@@ -1,5 +1,6 @@
 import { CheckToUrl, findPhishingByUrl, findSumOfCheck, findTotalUrl } from "../services/PhishingData.js";
 import analyzeUrl from "../services/scrapper.js";
+import { checkWithVertexAI } from "../services/Vertex.js";
 
 export async function analyzeUrlHandler(req, res) {
   const { url } = req.body;
@@ -34,7 +35,9 @@ export async function checkPhishing(req, res) {
     console.log(result)
     return res.status(200).json({ success: true, data: findUrl.status === 1 ? true : false });
   }
-  const result = Math.random() < 0.5;
+  // check pakai vertex disni
+  const result = await checkWithVertexAI(data)
+  console.log(result)
   return res.status(200).json({ success: true, data: result });
 }
 
@@ -42,6 +45,7 @@ export async function home(req, res) {
   const data = {
     "total_dataset": await findTotalUrl(),
     "total_scan": await findSumOfCheck(),
+    "accuracy": "92%",
   };
   res.status(200).json({ success: true, data: data });
 }

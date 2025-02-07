@@ -1,27 +1,27 @@
-import * as cheerio from "cheerio";
+import axios from "axios";
+import { JSDOM } from "jsdom";
 
 async function analyzeUrl(url) {
   try {
-    // Request ke URL
-    let cheerioSuccess = true;
-    try {
-      const response = await fetch(url, {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        }
-      });
+    // Mengambil HTML dengan axios
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+      }
+    });
 
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-      const html = await response.text();
-      let $;
-
-      $ = cheerio.load(html);
-    } catch (err) {
-      console.error("Error loading Cheerio:", err.message);
-      cheerioSuccess = false;
+    // Memastikan bahwa request berhasil
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
+    const html = response.data;
+
+    // Parsing HTML menggunakan JSDOM
+    const dom = new JSDOM(html);
+    const document = dom.window.document;
+
+    // Analisis URL seperti sebelumnya
     const urlObj = new URL(url);
     const hostname = urlObj.hostname;
     const path = urlObj.pathname;
@@ -69,17 +69,17 @@ async function analyzeUrl(url) {
       longest_words_raw: Math.max(...url.split("/").map((word) => word.length)),
       avg_words_raw: url.split("/").reduce((acc, word) => acc + word.length, 0) / url.split("/").length,
 
-      // Jika cheerio gagal, fitur ini diisi 0
-      nb_hyperlinks: cheerioSuccess ? $("a").length : 0,
-      nb_extCSS: cheerioSuccess ? $('link[rel="stylesheet"]').length : 0,
-      login_form: cheerioSuccess ? ($('input[type="password"]').length > 0 ? 1 : 0) : 0,
-      external_favicon: cheerioSuccess ? ($('link[rel="icon"]').attr("href")?.startsWith("http") ? 1 : 0) : 0,
-      links_in_tags: cheerioSuccess ? $("a").length : 0,
-      submit_email: cheerioSuccess ? (url.includes("mailto:") ? 1 : 0) : 0,
-      iframe: cheerioSuccess ? $("iframe").length : 0,
-      onmouseover: cheerioSuccess ? $("[onmouseover]").length : 0,
-      empty_title: cheerioSuccess ? (!$("title").text().trim() ? 1 : 0) : 0,
-      domain_in_title: cheerioSuccess ? ($("title").text().includes(hostname) ? 1 : 0) : 0,
+      // Menggunakan JSDOM untuk menganalisis konten
+      nb_hyperlinks: document.querySelectorAll("a").length,
+      nb_extCSS: document.querySelectorAll('link[rel="stylesheet"]').length,
+      login_form: document.querySelectorAll('input[type="password"]').length > 0 ? 1 : 0,
+      external_favicon: document.querySelector('link[rel="icon"]')?.getAttribute("href")?.startsWith("http") ? 1 : 0,
+      links_in_tags: document.querySelectorAll("a").length,
+      submit_email: url.includes("mailto:") ? 1 : 0,
+      iframe: document.querySelectorAll("iframe").length,
+      onmouseover: document.querySelectorAll("[onmouseover]").length,
+      empty_title: !document.querySelector("title")?.textContent.trim() ? 1 : 0,
+      domain_in_title: document.querySelector("title")?.textContent.includes(hostname) ? 1 : 0,
     };
   } catch (error) {
     console.error("Error scraping URL:", error.message);
