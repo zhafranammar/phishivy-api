@@ -52,8 +52,6 @@ export async function checkWithVertexAI(data) {
 
     const response = await axios.post(API_URL, requestData, { headers });
     const { scores, classes } = response.data.predictions[0];
-    console.log(scores)
-    console.log(classes)
     let resultClass = 'True'
     let result = {
       confidence: 0,

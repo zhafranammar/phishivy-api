@@ -1,4 +1,4 @@
-import { CheckToUrl, findPhishingByUrl, findSumOfCheck, findTotalUrl } from "../services/PhishingData.js";
+import { addPhishing, CheckToUrl, findPhishingByUrl, findSumOfCheck, findTotalUrl } from "../services/PhishingData.js";
 import analyzeUrl from "../services/scrapper.js";
 import { checkWithVertexAI } from "../services/Vertex.js";
 
@@ -36,8 +36,24 @@ export async function checkPhishing(req, res) {
     return res.status(200).json({ success: true, data: findUrl.status === 1 ? true : false });
   }
   // check pakai vertex disni
-  const result = await checkWithVertexAI(data)
-  console.log(result)
+  let newPhishing;
+  if (typeof data === "string") {
+    try {
+      newPhishing = JSON.parse(data);
+    } catch (error) {
+      return res.status(400).json({ error: "Invalid JSON data format" });
+    }
+  } else {
+    newPhishing = { ...data };
+  }
+
+  newPhishing.url = url;
+
+  const result = await checkWithVertexAI(data);
+  newPhishing.status = result.class === true ? 1 : 0;
+
+  await addPhishing(newPhishing);
+
   return res.status(200).json({ success: true, data: result });
 }
 

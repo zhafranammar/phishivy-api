@@ -10,6 +10,17 @@ export const findPhishingByUrl = async (url) => {
     throw error;
   }
 };
+
+export const addPhishing = async (data) => {
+  try {
+    const phishingEntry = await PhishingData.create(data);
+    return phishingEntry;
+  } catch (error) {
+    console.error("Error adding phishing data:", error);
+    throw new Error("Gagal menambahkan data phishing");
+  }
+};
+
 export const findTotalUrl = async () => {
   try {
     // Menghitung total URL
