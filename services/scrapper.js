@@ -71,7 +71,7 @@ async function analyzeUrl(url) {
 
       // Menggunakan JSDOM untuk menganalisis konten
       nb_hyperlinks: document.querySelectorAll("a").length,
-      nb_extCSS: document.querySelectorAll('link[rel="stylesheet"]').length,
+      nb_extcss: document.querySelectorAll('link[rel="stylesheet"]').length,
       login_form: document.querySelectorAll('input[type="password"]').length > 0 ? 1 : 0,
       external_favicon: document.querySelector('link[rel="icon"]')?.getAttribute("href")?.startsWith("http") ? 1 : 0,
       links_in_tags: document.querySelectorAll("a").length,
@@ -83,7 +83,7 @@ async function analyzeUrl(url) {
     };
   } catch (error) {
     console.error("Error scraping URL:", error.message);
-    throw new Error("Failed to scrape URL");
+    throw new Error("Tautan yang Anda masukkan tidak aktif atau tidak ditemukan. Mohon periksa kembali URL yang Anda inputkan dan pastikan tautan tersebut masih valid.");
   }
 }
 

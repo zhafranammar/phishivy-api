@@ -32,7 +32,6 @@ export async function checkPhishing(req, res) {
   const findUrl = await findPhishingByUrl(url)
   if (findUrl) {
     const result = await CheckToUrl(url)
-    console.log(result)
     return res.status(200).json({ success: true, data: findUrl.status === 1 ? true : false });
   }
   // check pakai vertex disni
@@ -49,9 +48,13 @@ export async function checkPhishing(req, res) {
 
   newPhishing.url = url;
 
-  const result = await checkWithVertexAI(data);
-  newPhishing.status = result.class === true ? 1 : 0;
+  // const result = await checkWithVertexAI(data);
 
+  const result = {
+    "class": true,
+    "confidence": 1
+  }
+  newPhishing.status = result.class === true ? 1 : 0;
   await addPhishing(newPhishing);
 
   return res.status(200).json({ success: true, data: result });

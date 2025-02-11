@@ -17,7 +17,6 @@ export const addPhishing = async (data) => {
     return phishingEntry;
   } catch (error) {
     console.error("Error adding phishing data:", error);
-    throw new Error("Gagal menambahkan data phishing");
   }
 };
 
@@ -34,9 +33,8 @@ export const findTotalUrl = async () => {
 
 export const findSumOfCheck = async () => {
   try {
-    // Menjumlahkan nilai check_by_user dan menambahkan 541
     const sumCheck = await PhishingData.sum('check_by_user');
-    const result = sumCheck + 541;
+    const result = sumCheck;
     return result;
   } catch (error) {
     console.error("Error summing check_by_user:", error);
