@@ -48,12 +48,12 @@ export async function checkPhishing(req, res) {
 
   newPhishing.url = url;
 
-  // const result = await checkWithVertexAI(data);
+  const result = await checkWithVertexAI(data);
 
-  const result = {
-    "class": true,
-    "confidence": 1
-  }
+  // const result = {
+  //   "class": true,
+  //   "confidence": 1
+  // }
   newPhishing.status = result.class === true ? 1 : 0;
   await addPhishing(newPhishing);
 
