@@ -36,7 +36,7 @@ export async function checkPhishing(req, res) {
       "class": findUrl.status == 1 ? true : false,
       "confidence": 1
     }
-    return res.status(200).json({ success: true, data: result });
+    return res.status(200).json({ success: true, data: result.class });
   }
   // check pakai vertex disni
   let newPhishing;
@@ -61,7 +61,7 @@ export async function checkPhishing(req, res) {
   newPhishing.status = result.class === true ? 1 : 0;
   await addPhishing(newPhishing);
 
-  return res.status(200).json({ success: true, data: result });
+  return res.status(200).json({ success: true, data: result.class });
 }
 
 export async function home(req, res) {

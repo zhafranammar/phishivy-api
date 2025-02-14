@@ -51,20 +51,15 @@ export async function checkWithVertexAI(data) {
     };
 
     const response = await axios.post(API_URL, requestData, { headers });
+    console.log(response.data.predictions)
     const { scores, classes } = response.data.predictions[0];
-    let resultClass = 'True'
+    const maxIndex = scores.indexOf(Math.max(...scores)); // Cari index skor tertinggi
+
     let result = {
-      confidence: 0,
-      class: true
-    }
-    if (scores[0] > scores[1]) {
-      result.confidence = scores[0]
-      resultClass = classes[0]
-    } else {
-      result.confidence = scores[1]
-      resultClass = classes[1]
-    }
-    if (resultClass === 'False') {
+      confidence: scores[maxIndex], // Ambil skor tertinggi
+      class: classes[maxIndex] // Ambil kelas yang sesuai dengan skor tertinggi
+    };
+    if (result.class === '0' || result.confidence < 0.950) {
       result.class = false
     } else {
       result.class = true
